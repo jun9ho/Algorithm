@@ -4,39 +4,39 @@ using namespace std;
 
 int answer = 0;
 
-void bfs(int num, int sheep, int wolves,unordered_map<int, vector<int>> graph,vector<int> info, vector<bool> candidates) {
+void dfs(int n, int sheeps,int wolves,vector<bool> candidates,vector<int>& info,unordered_map<int,vector<int>>& graph )
+{
     int size = candidates.size();
-    if (info[num]) wolves += 1;
-    else sheep += 1;
-    if (0 < sheep && sheep <= wolves) return;
-    
-    answer = max(answer, sheep);
-    
-    for (const auto& ele : graph[num]){
+    if(!info[n]) sheeps++;
+    else wolves++;
+    if(sheeps>0 && wolves>=sheeps) return;
+    answer = max(answer,sheeps);
+    for (auto& ele : graph[n]){
         candidates[ele] = true;
     }
-    //1,2 = true
-    for (int i = 0; i < size; ++i){
-        if (candidates[i]){
+    for(int i=0;i<size;i++){
+        if(candidates[i]){
             candidates[i] = false;
-            bfs(i, sheep, wolves,graph,info,candidates);
-            candidates[i] = true;
+            dfs(i,sheeps,wolves,candidates,info,graph);
+            candidates[i]= true;
         }
     }
-
+    return;
+    
+    
 }
 
+
 int solution(vector<int> info, vector<vector<int>> edges) {
-
-    int size = info.size();
-    vector<bool> candidates(size, false);
-    unordered_map<int, vector<int>> graph;
-    for (const auto& ele : edges)
-    {
-        graph[ele[0]].push_back(ele[1]);
+    
+    vector<bool> candidates(info.size());
+    unordered_map<int,vector<int>> graph;
+    for(auto edge:edges){
+        graph[edge[0]].push_back(edge[1]);
     }
-
-    bfs(0, 0, 0,graph,info,candidates);
-
+    
+    dfs(0,0,0,candidates,info,graph);
+    
+    
     return answer;
 }
