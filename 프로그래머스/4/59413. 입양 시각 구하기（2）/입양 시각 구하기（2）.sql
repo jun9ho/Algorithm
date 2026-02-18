@@ -1,0 +1,16 @@
+-- 0시부터 23시까지, 각 시간대별로 입양이 몇 건이나 발생했는지 조회하는 SQL문을 작성
+
+WITH RECURSIVE HOURS AS(
+    SELECT 0 AS HOUR -- 이건 컬럼명, 재귀 초기값
+    UNION ALL
+    SELECT HOUR+1 -- 재귀
+    FROM HOURS
+    WHERE HOUR<23 -- 정지조건
+)
+
+SELECT H.HOUR,COUNT(ANIMAL_ID)
+FROM HOURS H
+LEFT JOIN ANIMAL_OUTS A
+ON(H.HOUR=HOUR(A.DATETIME))
+GROUP BY HOUR
+ORDER BY HOUR
