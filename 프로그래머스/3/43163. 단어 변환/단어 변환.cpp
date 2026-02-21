@@ -16,7 +16,7 @@ int bfs(int targetIndex,vector<int> v[],int n){
             return curDist;
         }
         for(int i=0;i<v[curIndex].size();i++){
-            if(vis[curIndex]) continue;
+
             q.push({v[curIndex][i],curDist+1});
         }
         
