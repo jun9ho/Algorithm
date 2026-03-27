@@ -5,41 +5,39 @@ using namespace std;
 int dx[4] = {1,-1,0,0};
 int dy[4] = {0,0,1,-1};
 
-int bfs(int x,int y,vector<vector<int>>& maps,vector<vector<bool>> &v ){
-    
+int bfs(vector<vector<int>> maps){
     queue<pair<pair<int,int>,int>> q;
-    q.push({{x,y},1});
-    v[x][y] =true;
+    vector<vector<int>> dist(maps.size(),vector<int>(maps[0].size(),999999));
+    
+    q.push({{0,0},0});
+    dist[0][0]=0;
     
     while(!q.empty()){
-        int curX = q.front().first.first;
-        int curY = q.front().first.second;
-        int curDist = q.front().second;
-        if((curX==maps.size()-1)&&(curY==maps[0].size()-1))
-        {
-            return curDist;
-        }
+        int curx = q.front().first.first;
+        int cury = q.front().first.second;
+        int curd = q.front().second;
         q.pop();
-        for(int i=0;i<4;i++){
-            
-            if((curX +dx[i]>=maps.size())||(curX +dx[i]<0) ||(curY+dy[i]>=maps[0].size())||(curY+dy[i]<0)) continue;
-            if(v[curX +dx[i]][curY+dy[i]]) continue;
-            if(maps[curX +dx[i]][curY +dy[i]]==0) continue;
-            v[curX +dx[i]][curY+dy[i]] = true;
-            q.push({{curX +dx[i],curY+dy[i]},curDist+1});
+        if(curx==maps.size()-1 && cury==maps[0].size()-1){
+            return curd+1;
         }
-        
+        for(int i=0;i<4;i++){
+            int nx = curx + dx[i];
+            int ny = cury + dy[i];
+            int nd = curd + 1;
+            if(nx<0 || ny <0 || nx>=maps.size()|| ny>=maps[0].size()) continue;
+            if(maps[nx][ny]==0) continue;
+            if(nd>=dist[nx][ny]) continue;
+            q.push({{nx,ny},nd});
+            dist[nx][ny] = nd;
+        }
     }
     return -1;
 }
 
-
 int solution(vector<vector<int>> maps)
 {
     int answer = 0;
-    vector<vector<bool>> v(maps.size(),vector<bool>(maps[0].size(),false));
-    
-    answer = bfs(0,0,maps,v);
+    answer = bfs(maps);
     
     return answer;
 }
