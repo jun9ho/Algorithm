@@ -2,42 +2,30 @@
 
 using namespace std;
 
-struct Node{
-    int index;
-    int value;
-    
-    bool operator<(const Node& other)const{
-        return value<other.value;
-    }
-};
-
 int solution(vector<int> priorities, int location) {
     int answer = 1;
-    queue<Node>q;
-    priority_queue<Node>pq;
+    queue<pair<int,int>> q1;
+    priority_queue<int> q2;
     for(int i=0;i<priorities.size();i++){
-        q.push({i,priorities[i]});
-        pq.push({i,priorities[i]});
+        q1.push({i,priorities[i]});
+        q2.push(priorities[i]);
     }
-    while(!q.empty()){
-        int idx = q.front().index;
-        int prior = q.front().value;
-        q.pop();
-        
-        if(pq.top().value == prior){
-            if(location==idx)
+    while(!q1.empty()){
+        int loc = q1.front().first;
+        int n = q1.front().second;
+        q1.pop();
+        if(n==q2.top()){
+            if(loc== location){
                 return answer;
-            else{
-                pq.pop();
-                answer++;
             }
+            q2.pop();
+            answer++;
         }
         else{
-            q.push({idx,prior});
+            q1.push({loc,n});
         }
+
     }
-    
-    
     
     return answer;
 }
