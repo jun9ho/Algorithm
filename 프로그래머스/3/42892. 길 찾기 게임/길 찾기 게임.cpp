@@ -2,79 +2,82 @@
 
 using namespace std;
 
-
-
-//트리만들고 순회하면되긴함
-
-bool sorted(vector<int> a, vector<int> b){
-    
-    if(a[1]==b[1]) return a[0]<b[0];
-    return a[1]>b[1];
-}
-
 struct Node{
-    int index;
+    int idx;
     int x;
     int y;
-    Node* L;
-    Node* R;
+    Node* leftNode = nullptr;
+    Node* rightNode = nullptr;
 };
 
-void insertNode(Node& root, Node& A){
-    if(A.x<root.x){
-        if(root.L == NULL) root.L= &A;
-        else insertNode(*(root.L),A);
+bool comp(Node a, Node b){
+    if(a.y==b.y){
+        return a.x<b.x;
     }
-    else if(A.x>root.x){
-        if(root.R == NULL) root.R=&A;
-        else insertNode(*(root.R),A);
-    }
-    
-    return;
+    return a.y>b.y;
 }
 
-//preorder Root,L,R
-//postorder L,R,Root
-void preorder(Node& A,vector<int> &v){
-    v.push_back(A.index);
-    if(A.L != NULL)preorder(*(A.L),v);
-    if(A.R != NULL)preorder(*(A.R),v);
-    return;
+void createGraph(Node& a,Node& parent){
+    
+    int ax = a.x;
+    int ay = a.y;
+    int px = parent.x;
+    int py = parent.y;
+    if(ay>=py) return;
+    if(ax<px){
+        if(parent.leftNode==nullptr){
+            parent.leftNode = &a;
+        }
+        else{
+            createGraph(a, *parent.leftNode);
+        }
+        
+    }
+    else if(ax>px){
+        if(parent.rightNode==nullptr){
+            parent.rightNode = &a;
+        }
+        else{
+            createGraph(a, *parent.rightNode);
+        }
+    }
 }
-void postorder(Node& A,vector<int> &v){
-    if(A.L != NULL)postorder(*(A.L),v);
-    if(A.R != NULL)postorder(*(A.R),v);
-    v.push_back(A.index);
-    return;
+
+vector<int> preorder(Node a,vector<int>& v){
+    v.push_back(a.idx);
+    if(a.leftNode!=nullptr)preorder(*a.leftNode,v);
+    if(a.rightNode!=nullptr)preorder(*a.rightNode,v);
+    return v;
+}
+vector<int> postorder(Node a,vector<int>& v){
+    if(a.leftNode!=nullptr)postorder(*a.leftNode,v);
+    if(a.rightNode!=nullptr)postorder(*a.rightNode,v);
+    v.push_back(a.idx);
+    return v;
 }
 
 vector<vector<int>> solution(vector<vector<int>> nodeinfo) {
     vector<vector<int>> answer;
-    vector<vector<int>> nodei(nodeinfo);
-    
-    for(int i=0;i<nodeinfo.size();i++){
-        nodei[i].push_back(i+1);
+    vector<Node> v;
+    int idx=0;
+    for(auto node: nodeinfo){
+        // node[0] x좌표
+        // node[1] y좌표
+        idx++;
+        v.push_back({idx,node[0],node[1],nullptr,nullptr});
     }
-    sort(nodei.begin(),nodei.end(),sorted);
+    sort(v.begin(),v.end(),comp);
     
-    Node nn[nodei.size()];
-    Node root = {nodei[0][2],nodei[0][0],nodei[0][1],NULL,NULL};
-    nn[0]= root;
-    for(int i=1;i<nodei.size();i++){
-        int x = nodei[i][0];
-        int y = nodei[i][1];
-        int index = nodei[i][2];
-        Node n = {index,x,y,NULL,NULL};
-        nn[i]= n;
-        insertNode(root,nn[i]);
+    //먼저 이어주고, 그다음에 순회를해야되는데
+    for(int i=1;i<v.size();i++){
+        createGraph(v[i],v[0]);
     }
-    vector<int> vv1,vv2;
-    preorder(root,vv1);
-    postorder(root,vv2);
-    answer.push_back(vv1);
-    answer.push_back(vv2);
     
-    
+    //answer.push_back({v[0].leftNode->x,v[0].leftNode->y});
+    vector<int> pv,pv2;
+    pv = preorder(v[0],pv);
+    pv2 = postorder(v[0],pv2);
+    answer.push_back(pv);
+    answer.push_back(pv2);
     return answer;
-    
 }
