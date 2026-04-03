@@ -1,48 +1,82 @@
 #include <bits/stdc++.h>
 
 using namespace std;
-//d아,l왼,r오,u위
 
-int dx[4] = {1,0,0,-1};
+int dx[4] = {1,0,0,-1};// d l r u
 int dy[4] = {0,-1,1,0};
-
-string bfs(int n,int m, int curx,int cury,int endx,int endy, int k){//k는 가능거리
-    string s ="";
-    queue<pair<int,int>> q;
-    q.push({curx,cury});
-    
-    while(!q.empty()){
-        int cx = q.front().first;
-        int cy = q.front().second;
-        q.pop();
-        for(int i=0;i<4;i++){
-            int nx = cx+dx[i];
-            int ny = cy+dy[i];
-            if(abs(endx-nx)+abs(endy-ny)>k) continue;
-            if(nx<0||ny<0||nx>=n||ny>=m) continue;
-            q.push({nx,ny});
-            k--;
-            if(i==0)s+='d';
-            if(i==1)s+='l';
-            if(i==2)s+='r';
-            if(i==3)s+='u';
-            break;
-        }
-    }
-    
-    
-    return s;
-    
-}
 
 string solution(int n, int m, int x, int y, int r, int c, int k) {
     string answer = "";
-    //n,m 격자에서 x-1,y-1 출발 r-1,c-1 도착 k길이만큼
-    int len = abs(r-x)+abs(c-y);
-    if((k-len)%2==1) return "impossible";
+    x--;y--;r--;c--;
+    // dlru
+    // (du) (lr) (rl) (ud) 
+    // dllrl
+    int a = abs(r-x) + abs(c-y);
+    if(k<a || (k-a)%2!=0) return "impossible";
     
-    answer= bfs(n,m,x-1,y-1,r-1,c-1,k);
-    if(answer.size()==0) return "impossible";
+    vector<vector<int>> v(n,vector<int>(m,0));
+    int curx = x;
+    int cury = y;
+    map<int,char> mp;
+    mp[0]='d';
+    mp[1]='l';
+    mp[2]='r';
+    mp[3]='u';
+    while(1){
+        int b = abs(r-curx) + abs(c-cury);//얼마나 남았는지
+        if(b==k){
+            int diffx = r-curx;// r>curx 면 r이 더 아래쪽
+            int diffy = c-cury;// c>cury 면 c가 더 오른쪽
+            if(diffx>=0){
+                for(int i=0;i<diffx;i++){
+                    answer+='d';
+                }
+                if(diffy>=0){
+                    for(int j=0;j<diffy;j++){
+                        answer+='r';
+                    }
+                }
+                else{
+                    for(int j=0;j<(-diffy);j++){
+                        answer+='l';
+                    }
+                }
+                
+            }
+            else if(diffx<0){
+                if(diffy>=0){
+                    for(int j=0;j<diffy;j++){
+                        answer+='r';
+                    }
+                }
+                else{
+                    for(int j=0;j<(-diffy);j++){
+                        answer+='l';
+                    }
+                }
+                for(int i=0;i<(-diffx);i++){
+                    answer+='u';
+                }
+            }
+            
+            
+            break;
+        }
+        for(int i=0;i<4;i++){
+            int nx = curx+dx[i];
+            int ny = cury+dy[i];
+            if(nx>=n || ny>=m|| nx<0 ||ny<0) continue;
+            answer+=mp[i];
+            k--;
+            curx=nx;
+            cury=ny;
+            break;
+        }
+        
+    }
+    
+    
+    
     
     return answer;
 }
