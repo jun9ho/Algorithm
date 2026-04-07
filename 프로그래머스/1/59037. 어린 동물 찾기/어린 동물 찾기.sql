@@ -1,5 +1,6 @@
--- 코드를 입력하세요
-SELECT ANIMAL_ID, NAME
+-- 젊은 동물의 아이디와 이름을 조회하는 SQL 문을 작성
+-- 결과는 아이디 순으로 조회
+SELECT ANIMAL_ID,NAME
 FROM ANIMAL_INS
 WHERE INTAKE_CONDITION != 'AGED'
 ORDER BY ANIMAL_ID
