@@ -3,58 +3,67 @@
 using namespace std;
 
 
-bool isMatch(string a, string b){
-    int answer =0;
+bool matching(string a, string b){
+    if(a.size()!=b.size()) return false;
+    int cnt = 0;
     for(int i=0;i<a.size();i++){
-        if(a[i]==b[i]) answer++;
+        if(a[i]!=b[i]) cnt++;
     }
-    if(answer== a.size()-1) return true;
+    if(cnt==1) return true;
     else return false;
 }
 
-int bfs(vector<int> v[], int bidx, int tidx, int size){
-    vector<int> vis(size,9999);
+int bfs(int bidx,int tidx, vector<vector<int>> v){
     queue<pair<int,int>> q;
+    vector<int> dist(v.size(),INT_MAX);
     q.push({bidx,0});
-    vis[bidx] = 0;
+    dist[bidx] = 0;
     
     while(!q.empty()){
-        int cur = q.front().first;
-        int d   = q.front().second;
+        int curIdx = q.front().first;
+        int curDist = q.front().second;
         q.pop();
-        if(cur==tidx){
-            return d;
+        if(tidx==curIdx){
+            return curDist;
         }
-        for(int i=0;i<v[cur].size();i++){
-            int next = v[cur][i];
-            int nd   = d+1;
-            if(nd>=vis[next]) continue;
-            q.push({next,nd});
-            vis[next] = nd;
-        }
-    }    
-    return 0;
+        for(int i=0;i<v[curIdx].size();i++){
+            int nextIdx = v[curIdx][i];
+            int nextDist = curDist+1;
+            if(nextDist>=dist[nextIdx]) continue;
+            dist[nextIdx] = nextDist;
+            q.push({nextIdx,nextDist});
+        }    
+    }
+    
+    return dist[tidx];
 }
 
 int solution(string begin, string target, vector<string> words) {
     int answer = 0;
-    if(find(words.begin(),words.end(),target)==words.end() ) return answer;
-    int bidx = words.size();
-    int tidx = find(words.begin(),words.end(),target) -words.begin();
-    words.push_back(begin);
     
-    vector<int> v[words.size()];
+    int bidx = find(words.begin(),words.end(),begin) - words.begin();
+    int tidx = find(words.begin(),words.end(),target) - words.begin();
+
+    if(tidx==words.size()){
+        return 0;
+    }
+    
+    if(bidx==words.size()){
+        words.push_back(begin);
+    }
+    
+    vector<vector<int>> v(words.size());
+    
     for(int i=0;i<words.size();i++){
         for(int j=i+1;j<words.size();j++){
-            if(i==j) continue;
-            if(isMatch(words[i],words[j])){
+            if(matching(words[i],words[j])){
                 v[i].push_back(j);
                 v[j].push_back(i);
             }
         }
     }
-    answer = bfs(v,bidx,tidx,words.size());
     
+    answer = bfs(bidx,tidx,v);
     
     return answer;
 }
