@@ -4,44 +4,49 @@ using namespace std;
 
 vector<int> solution(vector<string> gems) {
     vector<int> answer;
-    
-    set<string> s1;
-    
-    for(int i=0;i<gems.size();i++){
-        s1.insert(gems[i]);
-    }
-    
-    int size = s1.size();
-    int begin = 0;
-    int end = 0;
-    int len = 100001;
-    int mb=0,me = 0;
+    map<string,int> m;
+    if(gems.size()==1) return {1,1};
+    int glen = gems.size();
+    int left =0;
+    int right =0;
+    int size=0;
     
     set<string> s;
-    map<string,int> m;
-    for(int i=0;i<gems.size();i++){
+    for(int i=0;i<glen;i++){
         s.insert(gems[i]);
+    }
+    int tsize= s.size(); // 보석 종류개수
+
+    int len = INT_MAX;
+    int mleft =INT_MAX;
+    int mright =INT_MAX;
+    for(int i=0;i<glen;i++){
+        
         m[gems[i]]++;
-        end = i;
-        if(s.size()==size){
-            while(s.size()==size){
-                m[gems[begin]]--;
-                if(m[gems[begin]]<=0){
-                    s.erase(gems[begin]);
-                    if(end-begin<len){
-                        mb = begin;
-                        me = end;
-                        len = me-mb;
+        if(m[gems[i]]==1) size++;
+        right =i;
+        
+        if(size==tsize){
+            while(left<=right){
+                m[gems[left]]--;
+                if(m[gems[left]]==0){
+                    size--;
+                    
+                    if(len>right-left+1){
+                        len = right-left+1;
+                        mleft=left;
+                        mright=right;
+                        
                     }
-                    begin++;
+                    left++;
                     break;
                 }
-                begin++;
+                left++;
             }
-
         }
+        
     }
     
     
-    return {mb+1,me+1};
+    return {mleft+1,mright+1};
 }
