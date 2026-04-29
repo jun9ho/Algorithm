@@ -2,44 +2,45 @@
 
 using namespace std;
 
-bool match(string a, string b){
-    if(a.length()!=b.length()) return false;
-    for(int i=0;i<a.length();i++){
-        if(a[i]=='*') continue;
-        if(a[i]!=b[i]) return false;
+map<vector<string>,int> m;
+
+bool match(string user, string ban){
+    if(user.size()!=ban.size()) return false;
+    int len =user.size();
+    for(int i=0;i<len;i++){
+        if(ban[i]=='*') continue;
+        if(user[i]!=ban[i]) return false;
     }
     return true;
 }
 
-void dfs(int cur,int mask,unordered_set<int>& s, vector<int> v[],int banN){
-    if(cur==banN){
-        s.insert(mask);
-        return;
+void dfs(vector<string>& user_id, vector<string>& banned_id,  vector<bool>& v,int cur,vector<string> all){
+    
+    if(cur==banned_id.size()){
+        sort(all.begin(),all.end());
+        m[all]++;
+        return;        
     }
     
-    for(int i=0;i<v[cur].size();i++){
-        int k = v[cur][i];// user index
-        if((mask)&(1<<k)) continue;
-        dfs(cur+1,mask|1<<k,s,v,banN);
+    int len = user_id.size();
+    for(int i =0;i<len;i++){
+        if(v[i]) continue;
+        if(!match(user_id[i],banned_id[cur])) continue;
+        v[i] = true;
+        all.push_back(user_id[i]);
+        dfs(user_id,banned_id,v,cur+1,all);
+        all.pop_back();
+        v[i] = false;
+        
     }
     
+    return;
 }
 
-
 int solution(vector<string> user_id, vector<string> banned_id) {
-    int answer = 0;
-    unordered_set<int> s;
-    int userN = user_id.size();
-    int banN = banned_id.size();
-    vector<int> v[banN];
-    for(int i=0;i<banN;i++){
-        for(int j=0;j<userN;j++){
-            if(match(banned_id[i],user_id[j])){
-                v[i].push_back(j);
-            }
-        }
-    }
-    dfs(0,0,s,v,banN);
+    int answer =0 ;
+    vector<bool> v(user_id.size(),false);
+    dfs(user_id,banned_id,v,0,{});
     
-    return s.size();
+    return m.size();
 }
