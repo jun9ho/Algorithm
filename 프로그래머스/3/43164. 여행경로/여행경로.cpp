@@ -5,6 +5,7 @@ using namespace std;
 map<vector<string>,int> fa;
 map<string,vector<string>> m1;
 map<pair<string,string>,int> m2;
+
 void dfs(string cur,int cursize, int size, vector<string> answer){
     if(cursize==size){
         fa[answer]++;
