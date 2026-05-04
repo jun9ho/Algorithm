@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 
 using namespace std;
+using T=tuple<int,int,int,int>;
 
 // 직선 도로 100원, 코너 500원
 
@@ -8,18 +9,19 @@ int dx[4] ={1,0,-1,0};
 int dy[4] ={0,1,0,-1};
 
 
+
 int bfs(vector<vector<int>> board){
     int n = board.size();
     vector<vector<vector<int>>> dist(n,vector<vector<int>>(n,vector<int>(4,INT_MAX)));
-    queue<tuple<int,int,int,int>> q; // x, y, dist, pre
+    priority_queue<T,vector<T>,greater<T>> q; //dist,pre, x, y
     q.push({0,0,0,-1});
     for(int i=0;i<4;i++){
         dist[0][0][i]=0;
     }
     while(!q.empty()){
-        auto [curx,cury,curd,pre] = q.front();
+        auto [curd,curx,cury,pre] = q.top();
         q.pop();
-        
+        if(curx==n-1 && cury==n-1) return curd;
 
         for(int i=0;i<4;i++){
             int nx = curx+dx[i];
@@ -36,7 +38,7 @@ int bfs(vector<vector<int>> board){
             if(dist[nx][ny][i]<=nd) continue;
             
             dist[nx][ny][i]= nd;
-            q.push({nx,ny,nd,i});
+            q.push({nd,nx,ny,i});
         }
         
         
