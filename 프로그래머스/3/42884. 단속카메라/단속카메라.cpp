@@ -1,23 +1,20 @@
 #include <bits/stdc++.h>
 
 using namespace std;
- 
-int solution(vector<vector<int>> routes) {
-    
-    
-    int answer = 1;
-    sort(routes.begin(), routes.end());
-    
-    int temp = routes[0][1];
-    
-    for (auto a : routes) {
-        
-        if (temp < a[0]) {
-            answer++;
-            temp = a[1];
-        }
 
-        if (temp >= a[1]) temp = a[1];
+int solution(vector<vector<int>> routes) {
+    int answer = 1;
+    sort(routes.begin(),routes.end());
+    int cur = routes[0][1];
+    for(auto route:routes){
+        //route[0],route[1]
+        if(cur<route[0]){
+            answer++;
+            cur=route[1];
+        }
+        else{
+            cur=min(route[1],cur);
+        }
     }
     return answer;
 }
