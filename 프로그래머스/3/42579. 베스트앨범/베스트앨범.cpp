@@ -1,54 +1,43 @@
 #include <bits/stdc++.h>
 
+
 using namespace std;
 
 
-bool sort1(pair<string,int> a, pair<string,int> b){
+bool sorted(pair<int,int> a, pair<int,int>b){
+    
+    if(a.first==b.first) return a.second<b.second;
+    
+    return a.first>b.first;
+}
+bool sorted2(pair<string,int> a, pair<string,int> b){
     
     return a.second>b.second;
 }
-
-bool sort2(pair<int,int> a, pair<int,int>b){
-    
-    
-    if(a.second==b.second){
-        return a.first<b.first;
-    }
-    
-    return a.second>b.second;
-}
-
+//속한 노래가 많이 재생된 장르를 먼저 수록합니다.
+//장르 내에서 많이 재생된 노래를 먼저 수록합니다.
+//장르 내에서 재생 횟수가 같은 노래 중에서는 고유 번호가 낮은 노래를 먼저 수록합니다.
 vector<int> solution(vector<string> genres, vector<int> plays) {
     vector<int> answer;
-    //속한 노래가 많이 재생된 장르를 먼저 수록
-    //-> 장르별로 노래 수 구하기
-    //장르 내에서 많이 재생된 노래를 먼저 수록
-    //-> 각 장르마다 어떤 노래가 있는지 체크 (몇번)
-    //장르 내에서 재생 횟수가 같은 노래 중에서는 고유 번호가 낮은 노래를 먼저 수록
-    int n = genres.size();
     
-    map<string,int> m1;//장르별 총 노래수
-    //장르 하나에 여러 노래,고유번호 짝이있어야돼
-    map<string,vector<pair<int,int>>> m2;
+    map<string,int> g;//장르
+    map<string,vector<pair<int,int>>> m;
     
-    
-    for(int i=0;i<n;i++){
-        string genre = genres[i];
-        m1[genre]+=plays[i];
-        m2[genre].push_back({i,plays[i]});         
+    for(int i=0;i<genres.size();i++){
+        g[genres[i]] += plays[i];
+        m[genres[i]].push_back({plays[i],i});
     }
-    int maxx = -1;
-    vector<pair<string,int>> v1(m1.begin(),m1.end());
+    vector<pair<string,int>> v2(g.begin(),g.end());
+    sort(v2.begin(),v2.end(),sorted2);
     
-    sort(v1.begin(),v1.end(),sort1);
-    for(auto iter=m2.begin();iter!=m2.end();iter++){
-        sort(iter->second.begin(),iter->second.end(),sort2);
-    }
-    
-    for(int i=0;i<v1.size();i++){
-        string a = v1[i].first;
-        answer.push_back(m2[a][0].first);
-        if(m2[a].size()>1) answer.push_back(m2[a][1].first);
+    for(int i=0;i<v2.size();i++){
+        //iter->first
+        vector<pair<int,int>> v(m[v2[i].first]);
+        sort(v.begin(),v.end(),sorted);
+        answer.push_back(v[0].second);
+        if(v.size()>1){
+            answer.push_back(v[1].second);
+        }
     }
     
     
