@@ -55,6 +55,5 @@ string solution(int n, int k, vector<string> cmd) {
         }
     }
 
-    
     return string(alive.begin(), alive.end());
 }
