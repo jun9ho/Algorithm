@@ -3,20 +3,19 @@
 using namespace std;
 
 vector<int> solution(int n, int s) {
+    if(s/n==0) return{-1};
+
     vector<int> answer;
-    if(n>=2 && s==1) return {-1};
-    if(n>s) return {-1};
-    
     int a = s/n;
-    int b = s%n;
-    if(b==0){
-        for(int i=0;i<n;i++) answer.push_back(a);
+    int b=  s%n;
+    int k = n-b;
+    for(int i=0;i<k;i++){
+        answer.push_back(a);
     }
-    else{
-        for(int i=0;i<n;i++) answer.push_back(a);
-        for(int i=0;i<b;i++) answer[i]++;
+    for(int i=0;i<b;i++){
+        answer.push_back(a+1);
     }
-    sort(answer.begin(),answer.end());
+    
     
     
     return answer;
