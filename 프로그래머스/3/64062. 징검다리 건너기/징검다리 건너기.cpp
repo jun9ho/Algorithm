@@ -1,21 +1,39 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 
 using namespace std;
 
 int solution(vector<int> stones, int k) {
-    int answer = INT_MAX;
-    multiset<int> ms;
-
-    for (int i = 0; i < k; i++) {
-        ms.insert(stones[i]);
+    int answer = 0;
+    //윈도우의 max값들을 모아서 min을 구하자
+    if(stones.size()==1){
+        return stones[0];
     }
-    answer = min(answer, *ms.rbegin());
-
-    for (int i = k; i < stones.size(); i++) {
-        ms.erase(ms.find(stones[i - k]));
-        ms.insert(stones[i]);             
-        answer = min(answer, *ms.rbegin());
+    priority_queue<int,vector<int>,greater<int>> apq;
+    priority_queue<int> pq;// 최대큐
+    map<int,int> m;
+    deque<int>dq;
+    
+    for(auto stone:stones){
+        if(dq.size()<k){
+            dq.push_back(stone);
+            m[stone]++;
+            pq.push(stone);
+            continue;
+        }
+        while(1){
+            if(m[pq.top()]<=0)pq.pop();
+            else break;
+        }
+        apq.push(pq.top());
+        m[dq[0]]--;
+        m[stone]++;
+        dq.pop_front();
+        dq.push_back(stone);
+        pq.push(stone);
     }
-
-    return answer;
+    while (!pq.empty() && m[pq.top()] <= 0) {
+        pq.pop();
+    }
+    apq.push(pq.top());
+    return apq.top();
 }
