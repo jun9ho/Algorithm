@@ -4,33 +4,33 @@ using namespace std;
 
 map<vector<string>,int> m;
 
-bool match(string user, string ban){
-    if(user.size()!=ban.size()) return false;
-    int len =user.size();
+bool match(string a, string b){
+    if(a.size()!=b.size()) return false;
+    int cnt=0;
+    int len = a.size();
     for(int i=0;i<len;i++){
-        if(ban[i]=='*') continue;
-        if(user[i]!=ban[i]) return false;
+        if(a[i]==b[i] ||b[i]=='*') continue;
+        else return false;
     }
     return true;
 }
 
-void dfs(vector<string>& user_id, vector<string>& banned_id,  vector<bool>& v,int cur,vector<string> all){
-    
-    if(cur==banned_id.size()){
-        sort(all.begin(),all.end());
-        m[all]++;
-        return;        
+void dfs(int idx,vector<string>& user_id, vector<string>& banned_id,vector<bool>& vis,vector<string> v){
+    if(idx==banned_id.size()){
+        sort(v.begin(),v.end());
+        m[v]++;
+        return;
     }
     
-    int len = user_id.size();
-    for(int i =0;i<len;i++){
-        if(v[i]) continue;
-        if(!match(user_id[i],banned_id[cur])) continue;
-        v[i] = true;
-        all.push_back(user_id[i]);
-        dfs(user_id,banned_id,v,cur+1,all);
-        all.pop_back();
-        v[i] = false;
+    for(int i=0;i<user_id.size();i++){
+        if(vis[i]) continue;
+        if(match(user_id[i],banned_id[idx])){
+            vis[i]=true;
+            v.push_back(user_id[i]);
+            dfs(idx+1,user_id,banned_id,vis,v);
+            v.pop_back();
+            vis[i]=false;
+        }
         
     }
     
@@ -38,9 +38,11 @@ void dfs(vector<string>& user_id, vector<string>& banned_id,  vector<bool>& v,in
 }
 
 int solution(vector<string> user_id, vector<string> banned_id) {
-    int answer =0 ;
-    vector<bool> v(user_id.size(),false);
-    dfs(user_id,banned_id,v,0,{});
+    int answer = 0;
+    vector<bool> vis(user_id.size(),false);
+    dfs(0,user_id,banned_id,vis,{});
+    
+    
     
     return m.size();
 }
