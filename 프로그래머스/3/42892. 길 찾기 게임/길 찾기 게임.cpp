@@ -6,78 +6,64 @@ struct Node{
     int idx;
     int x;
     int y;
-    Node* leftNode = nullptr;
-    Node* rightNode = nullptr;
+    Node * left;
+    Node * right;
 };
 
-bool comp(Node a, Node b){
+bool sorted(Node a,Node b){
     if(a.y==b.y){
         return a.x<b.x;
     }
     return a.y>b.y;
 }
 
-void createGraph(Node& a,Node& parent){
+void createTree(Node& root,Node& cur){
     
-    int ax = a.x;
-    int ay = a.y;
-    int px = parent.x;
-    int py = parent.y;
-    if(ay>=py) return;
-    if(ax<px){
-        if(parent.leftNode==nullptr){
-            parent.leftNode = &a;
-        }
-        else{
-            createGraph(a, *parent.leftNode);
-        }
-        
+    if(root.x>cur.x){//왼
+        if(root.left == NULL)root.left = &cur;
+        else createTree(*root.left,cur);
     }
-    else if(ax>px){
-        if(parent.rightNode==nullptr){
-            parent.rightNode = &a;
-        }
-        else{
-            createGraph(a, *parent.rightNode);
-        }
+    else{//오
+        if(root.right == NULL) root.right = &cur;
+        else createTree(*root.right, cur);
     }
+    return;
 }
 
-vector<int> preorder(Node a,vector<int>& v){
-    v.push_back(a.idx);
-    if(a.leftNode!=nullptr)preorder(*a.leftNode,v);
-    if(a.rightNode!=nullptr)preorder(*a.rightNode,v);
-    return v;
+void preorder(Node cur,vector<int>& v){
+    v.push_back(cur.idx);
+    if(cur.left  !=  NULL)preorder(*cur.left,v);
+    if(cur.right !=  NULL)preorder(*cur.right,v);
 }
-vector<int> postorder(Node a,vector<int>& v){
-    if(a.leftNode!=nullptr)postorder(*a.leftNode,v);
-    if(a.rightNode!=nullptr)postorder(*a.rightNode,v);
-    v.push_back(a.idx);
-    return v;
+void postorder(Node cur,vector<int>& v){
+    if(cur.left  !=  NULL)postorder(*cur.left,v);
+    if(cur.right !=  NULL)postorder(*cur.right,v);
+    v.push_back(cur.idx);
 }
 
 vector<vector<int>> solution(vector<vector<int>> nodeinfo) {
     vector<vector<int>> answer;
-    vector<Node> v;
-    int idx=0;
-    for(auto node: nodeinfo){
-        // node[0] x좌표
-        // node[1] y좌표
-        idx++;
-        v.push_back({idx,node[0],node[1],nullptr,nullptr});
-    }
-    sort(v.begin(),v.end(),comp);
     
-    //먼저 이어주고, 그다음에 순회를해야되는데
-    for(int i=1;i<v.size();i++){
-        createGraph(v[i],v[0]);
+    int n = nodeinfo.size();
+    vector<Node> v(n);
+    
+    for(int i=0;i<n;i++){
+        v[i].idx= i+1;
+        v[i].x = nodeinfo[i][0];
+        v[i].y = nodeinfo[i][1];
+        v[i].left =  NULL;
+        v[i].right = NULL;
     }
     
-    //answer.push_back({v[0].leftNode->x,v[0].leftNode->y});
-    vector<int> pv,pv2;
-    pv = preorder(v[0],pv);
-    pv2 = postorder(v[0],pv2);
-    answer.push_back(pv);
-    answer.push_back(pv2);
-    return answer;
+    sort(v.begin(),v.end(),sorted);
+    
+    for(int i=1;i<n;i++){
+        createTree(v[0],v[i]);
+    }
+    vector<int> pre,post;
+    preorder(v[0],pre);
+    postorder(v[0],post);
+    
+    
+    return {pre,post};
 }
