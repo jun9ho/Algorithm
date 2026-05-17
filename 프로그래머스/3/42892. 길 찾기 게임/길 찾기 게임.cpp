@@ -63,7 +63,5 @@ vector<vector<int>> solution(vector<vector<int>> nodeinfo) {
     vector<int> pre,post;
     preorder(v[0],pre);
     postorder(v[0],post);
-    
-    
     return {pre,post};
 }
