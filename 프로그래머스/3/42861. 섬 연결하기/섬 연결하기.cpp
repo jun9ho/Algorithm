@@ -12,23 +12,25 @@ int solution(int n, vector<vector<int>> costs) {
     }
     
     priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;
-    vector<bool> dist(n,false);
-    dist[0] = true;
+    vector<bool> vis(n,false);
+    vis[0] = true;
     for(int i=0;i<v[0].size();i++){
         pq.push({v[0][i].second,v[0][i].first});
     }
     
     while(!pq.empty()){
-        int curd = pq.top().first;
+        int cd = pq.top().first;
         int cur = pq.top().second;
         pq.pop();
-        if(dist[cur]) continue;
-        dist[cur] = true;
-        answer+=curd;
-        
+        if(vis[cur]) continue;
+        answer+=cd;
+        vis[cur]=true;
         for(int i=0;i<v[cur].size();i++){
-            pq.push({v[cur][i].second,v[cur][i].first});
+            int next = v[cur][i].first;
+            int nd = v[cur][i].second;
+            pq.push({nd,next});
         }
+        
         
     }
     
