@@ -8,11 +8,11 @@ int solution(vector<int> stones, int k) {
     for(int i=0;i<k;i++){
         ms.insert(stones[i]);
     }
-    answer=*ms.rbegin();
+    answer= *ms.rbegin();
     for(int i=k;i<stones.size();i++){
         ms.erase(ms.find(stones[i-k]));
         ms.insert(stones[i]);
-        answer=min(answer,*ms.rbegin());
+        answer= min(*ms.rbegin(),answer);
     }
     
     return answer;
